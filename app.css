@@ -1,0 +1,478 @@
+/* ---------------------------------------------------------------------------
+   Ice Cream Calculator  —  minimalist, light, wide margins, accent-only colour
+   --------------------------------------------------------------------------- */
+
+/* -----  reset & base  ----------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+  color: #2c2c2c;
+  background: #fafaf8;
+  line-height: 1.6;
+}
+
+/* -----  app shell  -------------------------------------------------------- */
+
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 32px 64px;
+}
+
+header {
+  margin-bottom: 40px;
+}
+
+header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #1a1a1a;
+}
+
+.subtitle {
+  margin-top: 6px;
+  font-size: 1rem;
+  color: #888;
+}
+
+/* -----  card  ------------------------------------------------------------- */
+
+.card {
+  background: #fff;
+  border: 1px solid #e8e8e6;
+  border-radius: 10px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+/* -----  target amount  ---------------------------------------------------- */
+
+.target-section label {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.target-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.target-input {
+  width: 140px;
+}
+
+/* -----  input  ------------------------------------------------------------ */
+
+.input {
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  border: 2px solid #e0e0dd;
+  border-radius: 6px;
+  background: #fdfdfc;
+  color: #2c2c2c;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input:focus {
+  border-color: #8ab4d6;
+}
+
+.unit {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+/* -----  two columns  ------------------------------------------------------ */
+
+.columns {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.catalog-panel {
+  flex: 0 0 340px;
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+.right-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+/* -----  catalog list  ----------------------------------------------------- */
+
+.catalog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.catalog-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 6px;
+  transition: background 0.12s;
+}
+
+.catalog-item:hover {
+  background: #f5f7fa;
+}
+
+.catalog-item-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.catalog-item-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.catalog-item-stats {
+  font-size: 0.78rem;
+  color: #aaa;
+  margin-top: 1px;
+}
+
+/* -----  buttons  ---------------------------------------------------------- */
+
+.btn {
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 5px 14px;
+  border: 1px solid #d5d5d2;
+  border-radius: 5px;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.btn:hover {
+  background: #f0f2f5;
+  border-color: #bbb;
+}
+
+.btn-add {
+  border-color: #b8cee0;
+  color: #3a6d90;
+}
+
+.btn-add:hover {
+  background: #e8f0f8;
+  border-color: #8ab4d6;
+}
+
+.btn-remove {
+  padding: 3px 8px;
+  border: none;
+  background: transparent;
+  color: #c0c0c0;
+  font-size: 0.9rem;
+}
+
+.btn-remove:hover {
+  color: #d66;
+  background: transparent;
+}
+
+/* -----  selected / mix list  ---------------------------------------------- */
+
+.selected-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.selected-item {
+  padding: 14px 16px;
+  border: 1px solid #e8e8e6;
+  border-radius: 8px;
+  background: #fdfdfc;
+  transition: border-color 0.15s;
+}
+
+.selected-item.locked {
+  border-color: #c8d6e0;
+  background: #f6f9fc;
+}
+
+.selected-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.selected-item-name {
+  font-weight: 500;
+  font-size: 0.92rem;
+}
+
+.selected-item-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.amount-input {
+  width: 100px;
+}
+
+.computed-amount {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #3a6d90;
+  min-width: 70px;
+}
+
+/* lock toggle */
+
+.lock-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  margin-left: auto;
+  user-select: none;
+}
+
+.lock-toggle input[type="checkbox"] {
+  display: none;
+}
+
+.lock-label {
+  font-size: 0.82rem;
+  color: #888;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: #f0f0ed;
+  transition: background 0.12s, color 0.12s;
+}
+
+.selected-item.locked .lock-label {
+  color: #3a6d90;
+  background: #e0ecf5;
+}
+
+/* -----  hint  ------------------------------------------------------------- */
+
+.hint {
+  color: #bbb;
+  font-size: 0.92rem;
+  font-style: italic;
+}
+
+/* -----  dashboard / gauges  ----------------------------------------------- */
+
+.dashboard {
+  padding-bottom: 20px;
+}
+
+.gauges {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* single gauge row */
+
+.gauge {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gauge-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.gauge-label {
+  font-weight: 600;
+  font-size: 0.92rem;
+  width: 52px;
+  color: #444;
+}
+
+.gauge-value {
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  min-width: 56px;
+}
+
+.gauge-value.ok {
+  color: #3a7d44;
+}
+
+.gauge-value.bad {
+  color: #c0392b;
+}
+
+.gauge-icon {
+  font-size: 0.85rem;
+}
+
+.gauge-icon.ok {
+  color: #3a7d44;
+}
+
+.gauge-icon.bad {
+  color: #c0392b;
+}
+
+/* gauge track */
+
+.gauge-track {
+  position: relative;
+  height: 22px;
+  background: #eee;
+  border-radius: 5px;
+  margin-left: 62px;
+  overflow: hidden;
+}
+
+.gauge-range {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: #d4e8d0;
+  border-left: 2px solid #7cb87a;
+  border-right: 2px solid #7cb87a;
+}
+
+.gauge-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #2c2c2c;
+  border-radius: 2px;
+  z-index: 2;
+  transition: left 0.3s ease;
+}
+
+.gauge-bound {
+  position: absolute;
+  bottom: -17px;
+  font-size: 0.68rem;
+  color: #aaa;
+}
+
+.gauge-bound.right {
+  right: 0;
+}
+
+/* -----  feasibility badges  ----------------------------------------------- */
+
+.feasible-badge {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #3a7d44;
+}
+
+.infeasible-warning {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #fef7f0;
+  border: 1px solid #f0d8c0;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  color: #a05030;
+  line-height: 1.5;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 0.78rem;
+  padding: 1px 8px;
+  border-radius: 3px;
+  margin: 0 2px;
+}
+
+.tag.bad {
+  background: #f8e0d0;
+  color: #a05030;
+  font-weight: 500;
+}
+
+/* -----  footer  ----------------------------------------------------------- */
+
+footer {
+  margin-top: 36px;
+  font-size: 0.82rem;
+  color: #bbb;
+  text-align: center;
+}
+
+footer strong {
+  color: #999;
+  font-weight: 500;
+}
+
+/* -----  responsive  ------------------------------------------------------- */
+
+@media (max-width: 720px) {
+  .app {
+    padding: 24px 16px 48px;
+  }
+
+  .columns {
+    flex-direction: column;
+  }
+
+  .catalog-panel {
+    flex: none;
+    width: 100%;
+    max-height: 320px;
+  }
+
+  .target-input {
+    width: 100%;
+  }
+
+  .gauge-track {
+    margin-left: 0;
+  }
+
+  .gauge-header {
+    flex-wrap: wrap;
+  }
+}
