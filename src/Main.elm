@@ -1,10 +1,91 @@
-module Main exposing (main)
+port module Main exposing (main)
 
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Ingredients exposing (Ingredient, catalog)
+import Json.Decode as Decode
+import Json.Encode as Encode
+
+
+-- ---------------------------------------------------------------------------
+--  PORTS
+-- ---------------------------------------------------------------------------
+
+
+port saveState : String -> Cmd msg
+
+
+-- ---------------------------------------------------------------------------
+--  RECIPE ENCODING / DECODING  (for URL hash)
+-- ---------------------------------------------------------------------------
+
+
+type alias Recipe =
+    { targetAmount : String
+    , selections : List ( String, String, Bool )
+    }
+
+
+encodeRecipe : Model -> String
+encodeRecipe model =
+    Encode.object
+        [ ( "t", Encode.string model.targetAmount )
+        , ( "s", Encode.list encodeSelection model.selected )
+        ]
+        |> Encode.encode 0
+
+
+encodeSelection : SelectedIngredient -> Encode.Value
+encodeSelection sel =
+    Encode.object
+        [ ( "n", Encode.string sel.ingredient.name )
+        , ( "a", Encode.string sel.amount )
+        , ( "l", Encode.bool sel.locked )
+        ]
+
+
+decodeRecipe : Decode.Decoder Recipe
+decodeRecipe =
+    Decode.map2 Recipe
+        (Decode.field "t" Decode.string)
+        (Decode.field "s" (Decode.list decodeSelectionEntry))
+
+
+decodeSelectionEntry : Decode.Decoder ( String, String, Bool )
+decodeSelectionEntry =
+    Decode.map3 (\n a l -> ( n, a, l ))
+        (Decode.field "n" Decode.string)
+        (Decode.field "a" Decode.string)
+        (Decode.field "l" Decode.bool)
+
+
+findIngredient : String -> List Ingredient -> Maybe Ingredient
+findIngredient name catalog_ =
+    List.filter (\i -> i.name == name) catalog_ |> List.head
+
+
+applyRecipe : Recipe -> Model -> Model
+applyRecipe recipe base =
+    let
+        selections =
+            List.indexedMap
+                (\idx ( name, amount, locked ) ->
+                    case findIngredient name base.catalog of
+                        Just ing ->
+                            Just { id = idx, ingredient = ing, amount = amount, locked = locked }
+
+                        Nothing ->
+                            Nothing
+                )
+                recipe.selections
+    in
+    { base
+        | targetAmount = recipe.targetAmount
+        , selected = List.filterMap identity selections
+        , nextId = List.length recipe.selections
+    }
 
 
 -- ---------------------------------------------------------------------------
@@ -64,14 +145,23 @@ type alias Model =
     }
 
 
-init : Model
-init =
-    { catalog = catalog
-    , selected = []
-    , targetAmount = "1000"
-    , nextId = 0
-    , showInfo = False
-    }
+init : Decode.Value -> ( Model, Cmd Msg )
+init flags =
+    let
+        defaultModel =
+            { catalog = catalog
+            , selected = []
+            , targetAmount = "1000"
+            , nextId = 0
+            , showInfo = False
+            }
+    in
+    case Decode.decodeValue decodeRecipe flags of
+        Ok recipe ->
+            ( applyRecipe recipe defaultModel, Cmd.none )
+
+        Err _ ->
+            ( defaultModel, Cmd.none )
 
 
 
@@ -497,61 +587,65 @@ emptyOutput selected_ =
 -- ---------------------------------------------------------------------------
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        SetTarget val ->
-            { model | targetAmount = val }
+    let
+        newModel =
+            case msg of
+                SetTarget val ->
+                    { model | targetAmount = val }
 
-        AddIngredient ing ->
-            let
-                entry =
-                    { id = model.nextId
-                    , ingredient = ing
-                    , amount = "0"
-                    , locked = False
+                AddIngredient ing ->
+                    let
+                        entry =
+                            { id = model.nextId
+                            , ingredient = ing
+                            , amount = "0"
+                            , locked = False
+                            }
+                    in
+                    { model
+                        | selected = model.selected ++ [ entry ]
+                        , nextId = model.nextId + 1
                     }
-            in
-            { model
-                | selected = model.selected ++ [ entry ]
-                , nextId = model.nextId + 1
-            }
 
-        RemoveIngredient id_ ->
-            { model
-                | selected = List.filter (\s -> s.id /= id_) model.selected
-            }
+                RemoveIngredient id_ ->
+                    { model
+                        | selected = List.filter (\s -> s.id /= id_) model.selected
+                    }
 
-        SetAmount id_ val ->
-            { model
-                | selected =
-                    List.map
-                        (\s ->
-                            if s.id == id_ then
-                                { s | amount = val }
+                SetAmount id_ val ->
+                    { model
+                        | selected =
+                            List.map
+                                (\s ->
+                                    if s.id == id_ then
+                                        { s | amount = val }
 
-                            else
-                                s
-                        )
-                        model.selected
-            }
+                                    else
+                                        s
+                                )
+                                model.selected
+                    }
 
-        ToggleLock id_ ->
-            { model
-                | selected =
-                    List.map
-                        (\s ->
-                            if s.id == id_ then
-                                { s | locked = not s.locked }
+                ToggleLock id_ ->
+                    { model
+                        | selected =
+                            List.map
+                                (\s ->
+                                    if s.id == id_ then
+                                        { s | locked = not s.locked }
 
-                            else
-                                s
-                        )
-                        model.selected
-            }
+                                    else
+                                        s
+                                )
+                                model.selected
+                    }
 
-        ToggleInfo ->
-            { model | showInfo = not model.showInfo }
+                ToggleInfo ->
+                    { model | showInfo = not model.showInfo }
+    in
+    ( newModel, saveState (encodeRecipe newModel) )
 
 
 
@@ -932,10 +1026,16 @@ roundTo places value =
 -- ---------------------------------------------------------------------------
 
 
-main : Program () Model Msg
+subscriptions : Model -> Sub Msg
+subscriptions _ =
+    Sub.none
+
+
+main : Program Decode.Value Model Msg
 main =
-    Browser.sandbox
+    Browser.element
         { init = init
-        , update = update
         , view = view
+        , update = update
+        , subscriptions = subscriptions
         }
