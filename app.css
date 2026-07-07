@@ -45,10 +45,79 @@ header h1 {
   color: #1a1a1a;
 }
 
-.subtitle {
+.subtitle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-top: 6px;
+}
+
+.subtitle {
   font-size: 1rem;
   color: #888;
+  margin: 0;
+}
+
+.btn-info {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 2px 10px;
+  border: 1.5px solid #d5d5d2;
+  border-radius: 14px;
+  background: #f6f6f4;
+  color: #999;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  line-height: 1.4;
+}
+
+.btn-info:hover {
+  background: #e8e8e4;
+  color: #666;
+}
+
+.btn-info.active {
+  background: #e8f0f8;
+  border-color: #8ab4d6;
+  color: #3a6d90;
+}
+
+/* -----  info panel (description)  ----------------------------------------- */
+
+.info-panel {
+  margin-top: 16px;
+  padding: 18px 22px;
+  background: #f8fafb;
+  border: 1px solid #e0e6ec;
+  border-radius: 10px;
+  line-height: 1.7;
+  font-size: 0.9rem;
+  color: #555;
+  animation: infoSlide 0.2s ease;
+}
+
+.info-panel p {
+  margin-bottom: 10px;
+}
+
+.info-panel p:last-child {
+  margin-bottom: 0;
+}
+
+.info-panel strong {
+  color: #3a6d90;
+  font-weight: 600;
+}
+
+@keyframes infoSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* -----  card  ------------------------------------------------------------- */
@@ -70,12 +139,8 @@ header h1 {
 
 /* -----  target amount  ---------------------------------------------------- */
 
-.target-section label {
-  font-weight: 500;
-  display: block;
-  margin-bottom: 8px;
-  font-size: 0.95rem;
-  color: #555;
+.target-section {
+  padding: 16px 28px;
 }
 
 .target-row {
@@ -84,8 +149,15 @@ header h1 {
   gap: 10px;
 }
 
+.target-row label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #555;
+  white-space: nowrap;
+}
+
 .target-input {
-  width: 140px;
+  width: 100px;
 }
 
 /* -----  input  ------------------------------------------------------------ */

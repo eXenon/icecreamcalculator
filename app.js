@@ -4458,6 +4458,7 @@ var $elm$core$Set$toList = function (_v0) {
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
+var $elm$core$Basics$False = {$: 'False'};
 var $author$project$Ingredients$catalog = _List_fromArray(
 	[
 		{fat: 3.5, name: 'Whole milk (3.5%)', sugar: 4.8, water: 88.0},
@@ -4473,7 +4474,7 @@ var $author$project$Ingredients$catalog = _List_fromArray(
 		{fat: 0.0, name: 'Glucose syrup', sugar: 80.0, water: 20.0},
 		{fat: 0.0, name: 'Honey', sugar: 82.0, water: 17.0},
 		{fat: 0.0, name: 'Maple syrup', sugar: 67.0, water: 33.0},
-		{fat: 27.0, name: 'Egg yolk', sugar: 0.5, water: 50.0},
+		{fat: 27.0, name: 'Egg yolk (1 yolk ≈ 18 g)', sugar: 0.5, water: 50.0},
 		{fat: 10.0, name: 'Whole egg', sugar: 0.5, water: 75.0},
 		{fat: 1.0, name: 'Skim milk powder', sugar: 52.0, water: 3.0},
 		{fat: 8.0, name: 'Condensed milk (sweetened)', sugar: 55.0, water: 27.0},
@@ -4482,7 +4483,7 @@ var $author$project$Ingredients$catalog = _List_fromArray(
 		{fat: 42.0, name: 'Dark chocolate (70%)', sugar: 30.0, water: 1.0},
 		{fat: 11.0, name: 'Cocoa powder (unsweetened)', sugar: 0.0, water: 3.0}
 	]);
-var $author$project$Main$init = {catalog: $author$project$Ingredients$catalog, nextId: 0, selected: _List_Nil, targetAmount: '1000'};
+var $author$project$Main$init = {catalog: $author$project$Ingredients$catalog, nextId: 0, selected: _List_Nil, showInfo: false, targetAmount: '1000'};
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
 };
@@ -4504,7 +4505,6 @@ var $elm$core$Result$Ok = function (a) {
 var $elm$json$Json$Decode$OneOf = function (a) {
 	return {$: 'OneOf', a: a};
 };
-var $elm$core$Basics$False = {$: 'False'};
 var $elm$core$Basics$add = _Basics_add;
 var $elm$core$Maybe$Just = function (a) {
 	return {$: 'Just', a: a};
@@ -5273,7 +5273,7 @@ var $author$project$Main$update = F2(
 							},
 							model.selected)
 					});
-			default:
+			case 'ToggleLock':
 				var id_ = msg.a;
 				return _Utils_update(
 					model,
@@ -5287,11 +5287,25 @@ var $author$project$Main$update = F2(
 							},
 							model.selected)
 					});
+			default:
+				return _Utils_update(
+					model,
+					{showInfo: !model.showInfo});
 		}
 	});
 var $author$project$Main$SetTarget = function (a) {
 	return {$: 'SetTarget', a: a};
 };
+var $author$project$Main$ToggleInfo = {$: 'ToggleInfo'};
+var $elm$virtual_dom$VirtualDom$attribute = F2(
+	function (key, value) {
+		return A2(
+			_VirtualDom_attribute,
+			_VirtualDom_noOnOrFormAction(key),
+			_VirtualDom_noJavaScriptOrHtmlUri(value));
+	});
+var $elm$html$Html$Attributes$attribute = $elm$virtual_dom$VirtualDom$attribute;
+var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5301,6 +5315,20 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$core$Tuple$second = function (_v0) {
+	var y = _v0.b;
+	return y;
+};
+var $elm$html$Html$Attributes$classList = function (classes) {
+	return $elm$html$Html$Attributes$class(
+		A2(
+			$elm$core$String$join,
+			' ',
+			A2(
+				$elm$core$List$map,
+				$elm$core$Tuple$first,
+				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
+};
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$footer = _VirtualDom_node('footer');
 var $elm$html$Html$Attributes$for = $elm$html$Html$Attributes$stringProperty('htmlFor');
@@ -5319,13 +5347,29 @@ var $elm$core$List$isEmpty = function (xs) {
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$html$Html$main_ = _VirtualDom_node('main');
 var $elm$html$Html$Attributes$min = $elm$html$Html$Attributes$stringProperty('min');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$html$Html$Events$onClick = function (msg) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'click',
+		$elm$json$Json$Decode$succeed(msg));
+};
 var $elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
 var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
 	return {$: 'MayStopPropagation', a: a};
 };
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
 var $elm$html$Html$Events$stopPropagationOn = F2(
 	function (event, decoder) {
 		return A2(
@@ -5774,7 +5818,6 @@ var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('
 var $author$project$Main$AddIngredient = function (a) {
 	return {$: 'AddIngredient', a: a};
 };
-var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm$core$Basics$round = _Basics_round;
 var $elm$core$Basics$pow = _Basics_pow;
@@ -5791,22 +5834,6 @@ var $author$project$Main$formatDecimal = function (v) {
 };
 var $author$project$Main$formatPct = function (v) {
 	return $author$project$Main$formatDecimal(v) + '%';
-};
-var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
-};
-var $elm$html$Html$Events$on = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$Normal(decoder));
-	});
-var $elm$html$Html$Events$onClick = function (msg) {
-	return A2(
-		$elm$html$Html$Events$on,
-		'click',
-		$elm$json$Json$Decode$succeed(msg));
 };
 var $author$project$Main$viewCatalogItem = function (ing) {
 	return A2(
@@ -6087,20 +6114,6 @@ var $elm$html$Html$Attributes$boolProperty = F2(
 			$elm$json$Json$Encode$bool(bool));
 	});
 var $elm$html$Html$Attributes$checked = $elm$html$Html$Attributes$boolProperty('checked');
-var $elm$core$Tuple$second = function (_v0) {
-	var y = _v0.b;
-	return y;
-};
-var $elm$html$Html$Attributes$classList = function (classes) {
-	return $elm$html$Html$Attributes$class(
-		A2(
-			$elm$core$String$join,
-			' ',
-			A2(
-				$elm$core$List$map,
-				$elm$core$Tuple$first,
-				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
-};
 var $elm$core$List$head = function (list) {
 	if (list.b) {
 		var x = list.a;
@@ -6284,15 +6297,110 @@ var $author$project$Main$view = function (model) {
 								$elm$html$Html$text('🍦 Ice Cream Calculator')
 							])),
 						A2(
-						$elm$html$Html$p,
+						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('subtitle')
+								$elm$html$Html$Attributes$class('subtitle-row')
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Select ingredients, lock some amounts, and let the app balance the rest.')
-							]))
+								A2(
+								$elm$html$Html$p,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('subtitle')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Select ingredients, lock some amounts, and let the app balance the rest.')
+									])),
+								A2(
+								$elm$html$Html$button,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('btn btn-info'),
+										$elm$html$Html$Attributes$classList(
+										_List_fromArray(
+											[
+												_Utils_Tuple2('active', model.showInfo)
+											])),
+										$elm$html$Html$Events$onClick($author$project$Main$ToggleInfo),
+										A2($elm$html$Html$Attributes$attribute, 'aria-label', 'How it works')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text(
+										model.showInfo ? '✕' : 'ℹ')
+									]))
+							])),
+						model.showInfo ? A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('info-panel')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$p,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('🍨  '),
+										A2(
+										$elm$html$Html$strong,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('How it works')
+											]))
+									])),
+								A2(
+								$elm$html$Html$p,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Ice cream is all about balance! The sweet spot for creamy, scoopable results is '),
+										A2(
+										$elm$html$Html$strong,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('55–64% water')
+											])),
+										$elm$html$Html$text(', '),
+										A2(
+										$elm$html$Html$strong,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('15–20% sugar')
+											])),
+										$elm$html$Html$text(', and '),
+										A2(
+										$elm$html$Html$strong,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('10–16% fat')
+											])),
+										$elm$html$Html$text('.')
+									])),
+								A2(
+								$elm$html$Html$p,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Add ingredients from the catalog on the left, then either lock a precise amount or leave it set to auto. When you lock some ingredients, the app balances the rest to hit all three target ranges simultaneously — so you get perfect proportions without doing any math.')
+									])),
+								A2(
+								$elm$html$Html$p,
+								_List_Nil,
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Start by setting your target total weight, then pick your ingredients. Lock the ones you want to fix (e.g. the cream you have left in the fridge), and watch the sliders turn green! ✓')
+									]))
+							])) : $elm$html$Html$text('')
 					])),
 				A2(
 				$elm$html$Html$main_,
@@ -6308,16 +6416,6 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								A2(
-								$elm$html$Html$label,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$for('target-amount')
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('🎯  Target amount')
-									])),
-								A2(
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
@@ -6325,6 +6423,16 @@ var $author$project$Main$view = function (model) {
 									]),
 								_List_fromArray(
 									[
+										A2(
+										$elm$html$Html$label,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$for('target-amount')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Target amount')
+											])),
 										A2(
 										$elm$html$Html$input,
 										_List_fromArray(
@@ -6346,7 +6454,7 @@ var $author$project$Main$view = function (model) {
 											]),
 										_List_fromArray(
 											[
-												$elm$html$Html$text('grams')
+												$elm$html$Html$text('g')
 											]))
 									]))
 							])),
@@ -6371,7 +6479,7 @@ var $author$project$Main$view = function (model) {
 										_List_Nil,
 										_List_fromArray(
 											[
-												$elm$html$Html$text('📋  Available ingredients')
+												$elm$html$Html$text('Available ingredients')
 											])),
 										A2(
 										$elm$html$Html$div,
@@ -6402,7 +6510,7 @@ var $author$project$Main$view = function (model) {
 												_List_Nil,
 												_List_fromArray(
 													[
-														$elm$html$Html$text('🥄  Your mix')
+														$elm$html$Html$text('Your mix')
 													])),
 												$elm$core$List$isEmpty(model.selected) ? A2(
 												$elm$html$Html$p,

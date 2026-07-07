@@ -60,6 +60,7 @@ type alias Model =
     , selected : List SelectedIngredient
     , targetAmount : String
     , nextId : Int
+    , showInfo : Bool
     }
 
 
@@ -69,6 +70,7 @@ init =
     , selected = []
     , targetAmount = "1000"
     , nextId = 0
+    , showInfo = False
     }
 
 
@@ -84,6 +86,7 @@ type Msg
     | RemoveIngredient Int
     | SetAmount Int String
     | ToggleLock Int
+    | ToggleInfo
 
 
 
@@ -547,6 +550,9 @@ update msg model =
                         model.selected
             }
 
+        ToggleInfo ->
+            { model | showInfo = not model.showInfo }
+
 
 
 -- ---------------------------------------------------------------------------
@@ -568,15 +574,48 @@ view model =
     div [ class "app" ]
         [ header []
             [ h1 [] [ text "🍦 Ice Cream Calculator" ]
-            , p [ class "subtitle" ]
-                [ text "Select ingredients, lock some amounts, and let the app balance the rest." ]
+            , div [ class "subtitle-row" ]
+                [ p [ class "subtitle" ]
+                    [ text "Select ingredients, lock some amounts, and let the app balance the rest." ]
+                , button
+                    [ class "btn btn-info"
+                    , classList [ ( "active", model.showInfo ) ]
+                    , onClick ToggleInfo
+                    , attribute "aria-label" "How it works"
+                    ]
+                    [ text (if model.showInfo then "✕" else "ℹ") ]
+                ]
+            , if model.showInfo then
+                div [ class "info-panel" ]
+                    [ p []
+                        [ text "🍨  "
+                        , strong [] [ text "How it works" ]
+                        ]
+                    , p []
+                        [ text "Ice cream is all about balance! The sweet spot for creamy, scoopable results is "
+                        , strong [] [ text "55–64% water" ]
+                        , text ", "
+                        , strong [] [ text "15–20% sugar" ]
+                        , text ", and "
+                        , strong [] [ text "10–16% fat" ]
+                        , text "."
+                        ]
+                    , p []
+                        [ text "Add ingredients from the catalog on the left, then either lock a precise amount or leave it set to auto. When you lock some ingredients, the app balances the rest to hit all three target ranges simultaneously — so you get perfect proportions without doing any math."
+                        ]
+                    , p []
+                        [ text "Start by setting your target total weight, then pick your ingredients. Lock the ones you want to fix (e.g. the cream you have left in the fridge), and watch the sliders turn green! ✓"
+                        ]
+                    ]
+              else
+                text ""
             ]
         , main_ []
             [ -- target amount
               section [ class "card target-section" ]
-                [ label [ for "target-amount" ] [ text "🎯  Target amount" ]
-                , div [ class "target-row" ]
-                    [ input
+                [ div [ class "target-row" ]
+                    [ label [ for "target-amount" ] [ text "Target amount" ]
+                    , input
                         [ id "target-amount"
                         , type_ "number"
                         , class "input target-input"
@@ -586,7 +625,7 @@ view model =
                         , step "1"
                         ]
                         []
-                    , span [ class "unit" ] [ text "grams" ]
+                    , span [ class "unit" ] [ text "g" ]
                     ]
                 ]
 
@@ -594,7 +633,7 @@ view model =
             , div [ class "columns" ]
                 [ -- left: ingredient catalog
                   section [ class "card catalog-panel" ]
-                    [ h2 [] [ text "📋  Available ingredients" ]
+                    [ h2 [] [ text "Available ingredients" ]
                     , div [ class "catalog-list" ]
                         (List.map viewCatalogItem model.catalog)
                     ]
@@ -603,7 +642,7 @@ view model =
                 , div [ class "right-panel" ]
                     [ -- selected ingredients
                       section [ class "card mix-panel" ]
-                        [ h2 [] [ text "🥄  Your mix" ]
+                        [ h2 [] [ text "Your mix" ]
                         , if List.isEmpty model.selected then
                             p [ class "hint" ]
                                 [ text "Add ingredients from the catalog on the left." ]
