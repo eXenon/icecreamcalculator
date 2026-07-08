@@ -201,6 +201,29 @@ header h1 {
   min-width: 0;
 }
 
+/* -----  catalog toolbar  ------------------------------------------------- */
+
+.catalog-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.catalog-filter {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.82rem;
+  padding: 6px 10px;
+}
+
+.catalog-sort {
+  font-size: 0.82rem;
+  padding: 6px 8px;
+  background: #fdfdfc;
+  color: #555;
+  cursor: pointer;
+}
+
 /* -----  catalog list  ----------------------------------------------------- */
 
 .catalog-list {

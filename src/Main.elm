@@ -124,6 +124,18 @@ fatHigh =
 
 
 -- ---------------------------------------------------------------------------
+--  SORT
+-- ---------------------------------------------------------------------------
+
+
+type SortBy
+    = ByName
+    | ByWater
+    | BySugar
+    | ByFat
+
+
+-- ---------------------------------------------------------------------------
 --  MODEL
 -- ---------------------------------------------------------------------------
 
@@ -142,6 +154,8 @@ type alias Model =
     , targetAmount : String
     , nextId : Int
     , showInfo : Bool
+    , catalogSort : SortBy
+    , catalogFilter : String
     }
 
 
@@ -154,6 +168,8 @@ init flags =
             , targetAmount = "1000"
             , nextId = 0
             , showInfo = False
+            , catalogSort = ByName
+            , catalogFilter = ""
             }
     in
     case Decode.decodeValue decodeRecipe flags of
@@ -177,6 +193,8 @@ type Msg
     | SetAmount Int String
     | ToggleLock Int
     | ToggleInfo
+    | SetCatalogSort SortBy
+    | SetCatalogFilter String
 
 
 
@@ -644,6 +662,12 @@ update msg model =
 
                 ToggleInfo ->
                     { model | showInfo = not model.showInfo }
+
+                SetCatalogSort sort ->
+                    { model | catalogSort = sort }
+
+                SetCatalogFilter val ->
+                    { model | catalogFilter = val }
     in
     ( newModel, saveState (encodeRecipe newModel) )
 
@@ -728,8 +752,45 @@ view model =
                 [ -- left: ingredient catalog
                   section [ class "card catalog-panel" ]
                     [ h2 [] [ text "Available ingredients" ]
+                    , div [ class "catalog-toolbar" ]
+                        [ input
+                            [ type_ "text"
+                            , class "input catalog-filter"
+                            , placeholder "Filter…"
+                            , value model.catalogFilter
+                            , onInput SetCatalogFilter
+                            ]
+                            []
+                        , select
+                            [ class "input catalog-sort"
+                            , onInput
+                                (\val ->
+                                    case val of
+                                        "water" ->
+                                            SetCatalogSort ByWater
+
+                                        "sugar" ->
+                                            SetCatalogSort BySugar
+
+                                        "fat" ->
+                                            SetCatalogSort ByFat
+
+                                        _ ->
+                                            SetCatalogSort ByName
+                                )
+                            ]
+                            [ option [ value "name", selected (model.catalogSort == ByName) ] [ text "Name" ]
+                            , option [ value "water", selected (model.catalogSort == ByWater) ] [ text "Water" ]
+                            , option [ value "sugar", selected (model.catalogSort == BySugar) ] [ text "Sugar" ]
+                            , option [ value "fat", selected (model.catalogSort == ByFat) ] [ text "Fat" ]
+                            ]
+                        ]
                     , div [ class "catalog-list" ]
-                        (List.map viewCatalogItem model.catalog)
+                        (model.catalog
+                            |> filterCatalog model.catalogFilter
+                            |> sortCatalog model.catalogSort
+                            |> List.map viewCatalogItem
+                        )
                     ]
 
                 -- right: your mix + results
@@ -980,6 +1041,40 @@ viewGauge label_ low_ high_ value_ ok_ unit_ =
             ]
         ]
 
+
+
+-- ---------------------------------------------------------------------------
+--  CATALOG FILTER / SORT
+-- ---------------------------------------------------------------------------
+
+
+filterCatalog : String -> List Ingredient -> List Ingredient
+filterCatalog query list =
+    if String.isEmpty (String.trim query) then
+        list
+
+    else
+        let
+            lower =
+                String.toLower query
+        in
+        List.filter (\i -> String.contains lower (String.toLower i.name)) list
+
+
+sortCatalog : SortBy -> List Ingredient -> List Ingredient
+sortCatalog sort list =
+    case sort of
+        ByName ->
+            List.sortBy .name list
+
+        ByWater ->
+            List.sortBy .water list
+
+        BySugar ->
+            List.sortBy .sugar list
+
+        ByFat ->
+            List.sortBy .fat list
 
 
 -- ---------------------------------------------------------------------------

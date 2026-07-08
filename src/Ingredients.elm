@@ -67,6 +67,11 @@ catalog =
       , sugar = 0.0
       , fat = 82.0
       }
+    , { name = "Cream (30%)"
+      , water = 63.0
+      , sugar = 3.2
+      , fat = 30.0
+      }
     , { name = "Mascarpone"
       , water = 44.0
       , sugar = 3.0
@@ -157,5 +162,10 @@ catalog =
       , water = 3.0
       , sugar = 0.0
       , fat = 11.0
+      }
+    , { name = "Brewed coffee"
+      , water = 99.0
+      , sugar = 0.0
+      , fat = 0.2
       }
     ]
